@@ -86,4 +86,33 @@ Furthermore, you can use the secure option in a named route to create a secure f
   </p>
 <% end -%>
 
+Testing with Shoulda
+====================
+
+If you are using Shoulda, a few convenience macros are provided:
+
+    class RegistrationsControllerTest < ActionController::TestCase
+      without_ssl_context do
+        context "GET to :new" do
+          setup do
+            get :new
+          end
+          should_redirect_to_ssl
+        end
+      end
+
+      with_ssl_context do
+        context "GET to :new" do
+          setup do
+            get :new
+          end
+          # your usual testing goes here
+        end
+      end
+    end
+    
+
+Copyright
+=========
+
 Copyright (c) 2005 David Heinemeier Hansson, released under the MIT license
