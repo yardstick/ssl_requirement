@@ -7,30 +7,30 @@ they should be redirected.
 
 Example:
 
-  class ApplicationController < ActionController::Base
-    include SslRequirement
-  end
-
-  class AccountController < ApplicationController
-    ssl_required :signup, :payment 
-    ssl_allowed :index
-    
-    def signup
-      # Non-SSL access will be redirected to SSL
-    end
-    
-    def payment
-      # Non-SSL access will be redirected to SSL
+    class ApplicationController < ActionController::Base
+      include SslRequirement
     end
 
-    def index
-      # This action will work either with or without SSL
-    end
+    class AccountController < ApplicationController
+      ssl_required :signup, :payment 
+      ssl_allowed :index
+      
+      def signup
+        # Non-SSL access will be redirected to SSL
+      end
+      
+      def payment
+        # Non-SSL access will be redirected to SSL
+      end
 
-    def other
-      # SSL access will be redirected to non-SSL
+      def index
+        # This action will work either with or without SSL
+      end
+
+      def other
+        # SSL access will be redirected to non-SSL
+      end
     end
-  end
   
 If a majority (or all) of your actions require SSL, then use ssl_exceptions instead of ssl_required.
 You can list out the actions that you do NOT want to be SSL protected. Calling ssl_exceptions without 
@@ -42,14 +42,15 @@ than just the declarative specification. Say, only premium accounts get SSL.
 For SSL domains that differ from the domain of the redirecting site, add the 
 following code to development.rb / test.rb / production.rb:
 
-# Redirects to https://secure.example.com instead of the default 
-# https://www.example.com.
-config.after_initialize do
-  SslRequirement.ssl_host = 'secure.example.com'
-end
+    # Redirects to https://secure.example.com instead of the default 
+    # https://www.example.com.
+    config.after_initialize do
+      SslRequirement.ssl_host = 'secure.example.com'
+    end
 
 You are able to turn disable ssl redirects by adding the following environment configuration file:
-  SslRequirement.disable_ssl_check = true
+
+    SslRequirement.disable_ssl_check = true
   
 P.S.: Beware when you include the SslRequirement module. At the time of
 inclusion, it'll add the before_filter that validates the declarations. Some
@@ -64,32 +65,32 @@ if the option should be ignored or not so you can develop as normal.
 
 Here is an example of creating a secure url:
 
-<%= url_for(:controller => "c", :action => "a", :secure => true) %>
+    <%= url_for(:controller => "c", :action => "a", :secure => true) %>
 
 If disable_ssl_check returns false url_for will return the following:
 
-https://yoursite.com/c/a
+    https://yoursite.com/c/a
 
 Furthermore, you can use the secure option in a named route to create a secure form as follows:
 
-<% form_tag session_path(:secure => true), :class => 'home_login' do -%>
-  <p>
-    <label for="name">Email</label>
-    <%= text_field_tag 'email', '', :class => 'text', :tabindex => 1 %>
-  </p>
-  <p>
-    <label for="password">Password</label>
-    <%= password_field_tag 'password', '', :class => 'text', :tabindex => 2 %>
-  </p>
-  <p>
-    <%= submit_tag "Login", :id => 'login_submit', :value => "", :alt => "Login" %>
-  </p>
-<% end -%>
+    <% form_tag session_path(:secure => true), :class => 'home_login' do -%>
+      <p>
+        <label for="name">Email</label>
+        <%= text_field_tag 'email', '', :class => 'text', :tabindex => 1 %>
+      </p>
+      <p>
+        <label for="password">Password</label>
+        <%= password_field_tag 'password', '', :class => 'text', :tabindex => 2 %>
+      </p>
+      <p>
+        <%= submit_tag "Login", :id => 'login_submit', :value => "", :alt => "Login" %>
+      </p>
+    <% end -%>
 
 Testing with Shoulda
 ====================
 
-If you are using Shoulda, a few convenience macros are provided:
+If you are using Shoulda, a few contexts and macros are provided:
 
     class RegistrationsControllerTest < ActionController::TestCase
       without_ssl_context do
