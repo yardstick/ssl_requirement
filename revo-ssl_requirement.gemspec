@@ -18,11 +18,13 @@ Gem::Specification.new do |s|
   s.files = [
     ".gitignore",
      "README",
+     "Rakefile",
      "VERSION",
      "init.rb",
      "lib/ssl_requirement.rb",
      "lib/url_rewriter.rb",
      "rails/init.rb",
+     "revo-ssl_requirement.gemspec",
      "shoulda_macros/ssl_requirement_macros.rb",
      "ssl_requirement.gemspec",
      "test/ssl_requirement_test.rb",

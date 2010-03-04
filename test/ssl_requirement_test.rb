@@ -1,6 +1,6 @@
 require 'set'
 require 'rubygems'
-require 'activesupport'
+require 'active_support'
 begin
   require 'action_controller'
 rescue LoadError
@@ -122,6 +122,23 @@ class SslRequirementTest < ActionController::TestCase
     @controller = SslRequirementController.new
     @ssl_host_override = 'www.example.com:80443'
     @non_ssl_host_override = 'www.example.com:8080'
+  end
+
+  # port preservation tests
+
+  def test_redirect_to_https_preserves_non_normal_port
+    assert_not_equal "on", @request.env["HTTPS"]
+    @request.port = 4567
+    get :b
+    assert_response :redirect
+    assert_match %r{^https://.*:4567/}, @response.headers['Location']
+  end
+
+  def test_redirect_to_https_does_not_preserve_normal_port
+    assert_not_equal "on", @request.env["HTTPS"]
+    get :b
+    assert_response :redirect
+    assert_match %r{^https://.*[^:]/}, @response.headers['Location']
   end
 
   # flash-related tests

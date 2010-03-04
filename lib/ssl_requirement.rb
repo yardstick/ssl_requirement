@@ -22,7 +22,7 @@ require "#{File.dirname(__FILE__)}/url_rewriter"
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 module SslRequirement
   mattr_accessor :ssl_host, :non_ssl_host
-  
+
   def self.included(controller)
     controller.extend(ClassMethods)
     controller.before_filter(:ensure_proper_protocol)
@@ -52,35 +52,67 @@ module SslRequirement
   end
 
   protected
-    # Returns true if the current action is supposed to run as SSL
-    def ssl_required?
-      required = (self.class.read_inheritable_attribute(:ssl_required_actions) || [])
-      except  = self.class.read_inheritable_attribute(:ssl_required_except_actions)
+  # Returns true if the current action is supposed to run as SSL
+  def ssl_required?
+    required = (self.class.read_inheritable_attribute(:ssl_required_actions) || [])
+    except  = self.class.read_inheritable_attribute(:ssl_required_except_actions)
 
-      unless except
-        required.include?(action_name.to_sym)
-      else
-        !except.include?(action_name.to_sym)
-      end
+    unless except
+      required.include?(action_name.to_sym)
+    else
+      !except.include?(action_name.to_sym)
     end
+  end
 
-    def ssl_allowed?
-      (self.class.read_inheritable_attribute(:ssl_allowed_actions) || []).include?(action_name.to_sym)
-    end
+  def ssl_allowed?
+    (self.class.read_inheritable_attribute(:ssl_allowed_actions) || []).include?(action_name.to_sym)
+  end
+
+  # normal ports are the ports used when no port is specified by the user to the browser
+  # i.e. 80 if the protocol is http, 443 is the protocol is https
+  NORMAL_PORTS = [80, 443]
 
   private
-    def ensure_proper_protocol
-      return true if SslRequirement.disable_ssl_check?
-      return true if ssl_allowed?
+  def ensure_proper_protocol
+    return true if SslRequirement.disable_ssl_check?
+    return true if ssl_allowed?
 
-      if ssl_required? && !request.ssl?
-        redirect_to "https://" + (ssl_host || request.host) + request.request_uri
-        flash.keep
-        return false
-      elsif request.ssl? && !ssl_required?
-        redirect_to "http://" + (non_ssl_host || request.host) + request.request_uri
-        flash.keep
-        return false
-      end
+    if ssl_required? && !request.ssl?
+      redirect_to determine_redirect_url(request, true)
+      flash.keep
+      return false
+    elsif request.ssl? && !ssl_required?
+      redirect_to determine_redirect_url(request, false)
+      flash.keep
+      return false
     end
+  end
+
+  def determine_redirect_url(request, ssl)
+    protocol = ssl ? "https" : "http"
+    "#{protocol}://#{determine_host_and_port(request, ssl)}#{request.request_uri}"
+  end
+
+  def determine_host_and_port(request, ssl)
+    request_host = request.host
+    request_port = request.port
+
+    if ssl
+      "#{(ssl_host || request_host)}#{determine_port_string(request_port)}"
+    else
+      "#{(non_ssl_host || request_host)}#{determine_port_string(request_port)}"
+    end
+  end
+
+  def determine_port_string(port)
+    unless port_normal?(port)
+      ":#{port}"
+    else
+      ""
+    end
+  end
+
+  def port_normal?(port)
+    NORMAL_PORTS.include?(port)
+  end
 end
