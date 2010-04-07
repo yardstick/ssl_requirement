@@ -21,7 +21,25 @@ require "#{File.dirname(__FILE__)}/url_rewriter"
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 module SslRequirement
-  mattr_accessor :ssl_host, :non_ssl_host
+  mattr_writer :ssl_host, :non_ssl_host
+
+  def self.ssl_host
+    determine_host(@@ssl_host)
+  end
+  
+  def self.non_ssl_host
+    determine_host(@@non_ssl_host)
+  end
+
+  # mattr_reader would generate both ssl_host and self.ssl_host
+  def ssl_host
+    SslRequirement.ssl_host
+  end
+  
+  def non_ssl_host
+    SslRequirement.non_ssl_host
+  end
+
 
   def self.included(controller)
     controller.extend(ClassMethods)
@@ -101,6 +119,14 @@ module SslRequirement
       "#{(ssl_host || request_host)}#{determine_port_string(request_port)}"
     else
       "#{(non_ssl_host || request_host)}#{determine_port_string(request_port)}"
+    end
+  end
+  
+  def self.determine_host(host)
+    if host.is_a?(Proc) || host.respond_to?(:call)
+      host.call
+    else
+      host
     end
   end
 

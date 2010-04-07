@@ -314,4 +314,29 @@ class SslRequirementTest < ActionController::TestCase
                     @response.headers['Location']
   end
 
+  # test ssl_host and ssl_non_host overrides with Procs
+  
+  def test_ssl_redirect_with_ssl_host_proc
+    SslRequirement.ssl_host = Proc.new do
+      @ssl_host_override
+    end
+    assert_not_equal "on", @request.env["HTTPS"]
+    get :a
+    assert_response :redirect
+    assert_match Regexp.new("^https://#{@ssl_host_override}"), 
+                 @response.headers['Location']
+    SslRequirement.ssl_host = nil
+  end
+
+  def test_non_ssl_redirect_with_non_ssl_host_proc
+    SslRequirement.non_ssl_host = Proc.new do
+      @non_ssl_host_override 
+    end
+    @request.env['HTTPS'] = 'on'
+    get :d
+    assert_response :redirect
+    assert_match Regexp.new("^http://#{@non_ssl_host_override}"),
+                 @response.headers['Location']
+    SslRequirement.non_ssl_host = nil
+  end
 end

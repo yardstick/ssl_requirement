@@ -51,11 +51,19 @@ following code to development.rb / test.rb / production.rb:
 For non-SSL domains that differ from domain of redirecting site, add the
 following code to development.rb / test.rb / production.rb:
 
-# Redirects to http://nonsecure.example.com instead of the default 
-# http://www.example.com.
-config.after_initialize do
-  SslRequirement.non_ssl_host = 'nonsecure.example.com'
-end
+	# Redirects to http://nonsecure.example.com instead of the default 
+	# http://www.example.com.
+	config.after_initialize do
+	  SslRequirement.non_ssl_host = 'nonsecure.example.com'
+	end
+
+You can also use a Proc to determine the ssl_host or non_ssl_host on the fly:
+
+	config.after_initialize do
+      SslRequirement.ssl_host = Proc.new do
+		'secure.example.com'
+	  end
+    end
 
 You are able to turn disable ssl redirects by adding the following environment configuration file:
 
