@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{revo-ssl_requirement}
-  s.version = "1.0.0"
+  s.name = %q{sslrequirement}
+  s.version = "1.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["RailsJedi", "David Heinemeier Hansson", "jcnetdev", "bcurren", "bmpercy"]
-  s.date = %q{2010-03-04}
+  s.authors = ["RailsJedi", "David Heinemeier Hansson", "jcnetdev", "bcurren", "bmpercy", "revo", "nathany"]
+  s.date = %q{2010-04-07}
   s.description = %q{SSL requirement adds a declarative way of specifying that certain actions should only be allowed to run under SSL, and if they're accessed without it, they should be redirected.}
-  s.email = %q{percival@umamibud.com}
+  s.email = %q{nathan@yardsticksoftware.com}
   s.extra_rdoc_files = [
     "README"
   ]
@@ -24,20 +24,18 @@ Gem::Specification.new do |s|
      "lib/ssl_requirement.rb",
      "lib/url_rewriter.rb",
      "rails/init.rb",
-     "revo-ssl_requirement.gemspec",
      "shoulda_macros/ssl_requirement_macros.rb",
-     "ssl_requirement.gemspec",
      "test/ssl_requirement_test.rb",
      "test/url_rewriter_test.rb"
   ]
-  s.homepage = %q{http://github.com/revo/ssl_requirement}
+  s.homepage = %q{http://github.com/yardstick/ssl_requirement}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Allow controller actions to force SSL on specific parts of the site.}
   s.test_files = [
-    "test/url_rewriter_test.rb",
-     "test/ssl_requirement_test.rb"
+    "test/ssl_requirement_test.rb",
+     "test/url_rewriter_test.rb"
   ]
 
   if s.respond_to? :specification_version then
