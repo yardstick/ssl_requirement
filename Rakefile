@@ -1,3 +1,9 @@
+require 'rake'
+require 'rake/testtask'
+
+desc "Run the unit tests"
+task :default => 'test'
+
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gemspec|
@@ -12,3 +18,9 @@ rescue LoadError
   puts "Jeweler not available. Install it with: gem install jeweler"
 end
 
+Rake::TestTask.new(:test) do |t|
+  t.pattern = 'test/**/*_test.rb'
+  t.ruby_opts << '-rubygems'
+  t.libs << 'test'
+  t.verbose = true
+end
