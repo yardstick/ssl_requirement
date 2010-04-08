@@ -21,7 +21,7 @@ require "#{File.dirname(__FILE__)}/url_rewriter"
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 module SslRequirement
-  mattr_writer :ssl_host, :non_ssl_host
+  mattr_writer :ssl_host, :non_ssl_host, :disable_ssl_check
 
   def self.ssl_host
     determine_host(@@ssl_host)
@@ -40,18 +40,15 @@ module SslRequirement
     SslRequirement.non_ssl_host
   end
 
-
-  def self.included(controller)
-    controller.extend(ClassMethods)
-    controller.before_filter(:ensure_proper_protocol)
-  end
-
   def self.disable_ssl_check?
     @@disable_ssl_check ||= false
   end
-
-  def self.disable_ssl_check=(value)
-    @@disable_ssl_check = value
+  
+  
+  # called when Module is mixed in
+  def self.included(controller)
+    controller.extend(ClassMethods)
+    controller.before_filter(:ensure_proper_protocol)
   end
 
   module ClassMethods
