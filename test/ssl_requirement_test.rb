@@ -3,7 +3,7 @@ require 'rubygems'
 require 'active_support'
 begin
   require 'action_controller'
-rescue LoadError
+rescue LoadError  # annoying when this dies due to more unusual errors (like mismatched active_support/action_controller gems)
   if ENV['ACTIONCONTROLLER_PATH'].nil?
     abort <<MSG
 Please set the ACTIONCONTROLLER_PATH environment variable to the directory
@@ -312,6 +312,22 @@ class SslRequirementTest < ActionController::TestCase
     assert_match Regexp.new("^http://"), @response.headers['Location']
     assert_no_match Regexp.new("^http://#{@non_ssl_host_override}"),
                     @response.headers['Location']
+  end
+
+  # ssl_all to lock down a full site
+  def test_ssl_all
+    SslRequirement.ssl_all = true
+    assert SslRequirement.ssl_all?
+    
+    assert_not_equal "on", @request.env["HTTPS"]
+    get :a  # requires ssl either way
+    assert_response :redirect
+    get :c  # allow ssl should still redirect
+    assert_response :redirect
+    get :d  # doesn't usually require ssl, but now it does
+    assert_response :redirect
+  ensure
+    SslRequirement.ssl_all = false
   end
 
 end

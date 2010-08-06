@@ -60,6 +60,10 @@ following code to development.rb / test.rb / production.rb:
 You are able to turn disable ssl redirects by adding the following environment configuration file:
 
     SslRequirement.disable_ssl_check = true
+
+Or you can enforce ssl across an entire site by setting:
+
+	SslRequirement.ssl_all = true
   
 P.S.: Beware when you include the SslRequirement module. At the time of
 inclusion, it'll add the before_filter that validates the declarations. Some

@@ -23,9 +23,12 @@ require "#{File.dirname(__FILE__)}/url_rewriter"
 module SslRequirement
   mattr_accessor :ssl_host, :non_ssl_host
 
-  mattr_writer :disable_ssl_check
+  mattr_writer :disable_ssl_check, :ssl_all
   def self.disable_ssl_check?
     @@disable_ssl_check ||= false
+  end
+  def self.ssl_all?
+    @@ssl_all ||= false
   end
 
   # called when Module is mixed in
@@ -52,6 +55,8 @@ module SslRequirement
   protected
   # Returns true if the current action is supposed to run as SSL
   def ssl_required?
+    return true if SslRequirement.ssl_all?
+    
     required = (self.class.read_inheritable_attribute(:ssl_required_actions) || [])
     except  = self.class.read_inheritable_attribute(:ssl_required_except_actions)
 
@@ -73,7 +78,7 @@ module SslRequirement
   private
   def ensure_proper_protocol
     return true if SslRequirement.disable_ssl_check?
-    return true if ssl_allowed?
+    return true if ssl_allowed? && !SslRequirement.ssl_all?
 
     if ssl_required? && !request.ssl?
       redirect_to determine_redirect_url(request, true)
