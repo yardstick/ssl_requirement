@@ -57,14 +57,6 @@ following code to development.rb / test.rb / production.rb:
 	  SslRequirement.non_ssl_host = 'nonsecure.example.com'
 	end
 
-You can also use a Proc to determine the ssl_host or non_ssl_host on the fly:
-
-	config.after_initialize do
-      SslRequirement.ssl_host = Proc.new do
-		'secure.example.com'
-	  end
-    end
-
 You are able to turn disable ssl redirects by adding the following environment configuration file:
 
     SslRequirement.disable_ssl_check = true
