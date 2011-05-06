@@ -56,7 +56,7 @@ module SslRequirement
   # Returns true if the current action is supposed to run as SSL
   def ssl_required?
     return true if SslRequirement.ssl_all?
-    
+
     required = (self.class.read_inheritable_attribute(:ssl_required_actions) || [])
     except  = self.class.read_inheritable_attribute(:ssl_required_except_actions)
 
@@ -70,6 +70,7 @@ module SslRequirement
   def ssl_allowed?
     (self.class.read_inheritable_attribute(:ssl_allowed_actions) || []).include?(action_name.to_sym)
   end
+  alias_method :ssl_not_required, :ssl_allowed
 
   # normal ports are the ports used when no port is specified by the user to the browser
   # i.e. 80 if the protocol is http, 443 is the protocol is https
