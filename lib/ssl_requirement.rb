@@ -50,6 +50,7 @@ module SslRequirement
     def ssl_allowed(*actions)
       write_inheritable_array(:ssl_allowed_actions, actions)
     end
+    alias_method :ssl_not_required, :ssl_allowed
   end
 
   protected
@@ -70,7 +71,6 @@ module SslRequirement
   def ssl_allowed?
     (self.class.read_inheritable_attribute(:ssl_allowed_actions) || []).include?(action_name.to_sym)
   end
-  alias_method :ssl_not_required, :ssl_allowed
 
   # normal ports are the ports used when no port is specified by the user to the browser
   # i.e. 80 if the protocol is http, 443 is the protocol is https
