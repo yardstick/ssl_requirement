@@ -50,13 +50,14 @@ module SslRequirement
     def ssl_allowed(*actions)
       write_inheritable_array(:ssl_allowed_actions, actions)
     end
+    alias_method :ssl_not_required, :ssl_allowed
   end
 
   protected
   # Returns true if the current action is supposed to run as SSL
   def ssl_required?
     return true if SslRequirement.ssl_all?
-    
+
     required = (self.class.read_inheritable_attribute(:ssl_required_actions) || [])
     except  = self.class.read_inheritable_attribute(:ssl_required_except_actions)
 
